@@ -17,6 +17,7 @@ import org.apache.solr.common.SolrException.ErrorCode;
 import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.apache.solr.core.Config;
+import org.apache.solr.core.PluginBag;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrDeletionPolicy;
 import org.apache.solr.handler.component.SearchComponent;
@@ -126,13 +127,14 @@ public class eZFindRequestHandler extends RequestHandlerBase implements SolrCore
         long startTime = System.currentTimeMillis();
 
         String newElevateConfiguration = req.getParams().get(eZFindRequestHandler.CONF_PARAM_NAME);
-
+        this.log.log(Level.ALL, "setting up elevation config writer");
         if (newElevateConfiguration != null) {
             String f = this.getElevateConfigurationFileName();
-
+            
             File fC = new File(this.core.getResourceLoader().getConfigDir(), f);
 
             if (fC.exists()) {
+            	this.log.log(Level.ALL, "a file" );
                 try {
                     FileWriter fw = new FileWriter(fC);
                     BufferedWriter out = new BufferedWriter(fw);
@@ -146,6 +148,8 @@ public class eZFindRequestHandler extends RequestHandlerBase implements SolrCore
                 } finally {
                     totalTime += System.currentTimeMillis() - startTime;
                 }
+            } else {
+            	this.log.log(Level.ALL, "file does not exist.");
             }
 
             /**
@@ -176,6 +180,8 @@ public class eZFindRequestHandler extends RequestHandlerBase implements SolrCore
              }
              }
              */
+        } else {
+        	this.log.log(Level.ALL, "elevate configuration ist null");
         }
     }
 
@@ -183,17 +189,19 @@ public class eZFindRequestHandler extends RequestHandlerBase implements SolrCore
     public void inform(SolrCore core) {
         this.core = core;
 
-        Map<String, SearchComponent> availableSearchComponents = core.getSearchComponents();
+        SearchComponent ezFind = core.getSearchComponent("elevator");
+        this.elevationComponent = (QueryElevationComponent) ezFind;
 
-        for (Iterator i = availableSearchComponents.entrySet().iterator(); i.hasNext();) {
-            Map.Entry e = (Map.Entry) i.next();
-            // Ugly hard-coded fully-qualified class name. Any workaround ?
-            if (e.getValue().getClass().getName() == "org.apache.solr.handler.component.QueryElevationComponent") {
-                // Found the Query Elevation Component, store it as local property.
-                this.elevationComponent = (QueryElevationComponent) e.getValue();
-                break;
-            }
-        }
+//        Map<String,SearchComponent> availableSearchComponents = core.getSearchComponents();
+//        for (Iterator i = ((Iterable) availableSearchComponents).iterator(); i.hasNext();) {
+//            Map.Entry e = (Map.Entry) i.next();
+//            // Ugly hard-coded fully-qualified class name. Any workaround ?
+//            if (e.getValue().getClass().getName() == "org.apache.solr.handler.component.QueryElevationComponent") {
+//                // Found the Query Elevation Component, store it as local property.
+//                this.elevationComponent = (QueryElevationComponent) e.getValue();
+//                break;
+//            }
+//        }
     }
   //  SolrCoreAware interface implementation - End
 
