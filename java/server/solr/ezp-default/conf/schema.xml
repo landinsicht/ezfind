@@ -515,6 +515,8 @@
     <fieldtype name="geohash" class="solr.GeoHashField"/>
 
 
+   <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+                 geo="true" distErrPct="0.025" maxDistErr="0.001" distanceUnits="kilometers" />
  </types>
 
 
@@ -601,6 +603,10 @@
         Longer patterns will be matched first.  if equal size patterns
         both match, the first appearing in the schema will be used.  -->
 
+
+     <dynamicField name="*_srpt"  type="location_rpt" indexed="true" stored="true"/>
+
+
    <!-- eZ Find : Dynamic fields for content attributes, multiValued=false (default) to allow sorting in Solr 3.1  -->
        <dynamicField name="*_i"        type="int"     indexed="true"  stored="true"/>
        <dynamicField name="*_f"        type="float"   indexed="true"  stored="true"/>
@@ -661,6 +667,8 @@
        <dynamicField name="*____tdt" type="tdate"  indexed="true"  stored="true" multiValued="true"/>
        <!-- geopoint for geospatial/location searches, boosting, ... -->
        <dynamicField name="*____gpt" type="geopoint"  indexed="true"  stored="true" multiValued="true"/>
+       <!-- geopoint for heatmap searches ... -->
+       <dynamicField name="*____srpt"  type="location_rpt" indexed="true" stored="true" multiValued="true"/>
        <!-- storage fields accepts base64 encoded strings -->
        <dynamicField name="*____bst" type="binary"  indexed="false"  stored="true" multiValued="true"/>
 

@@ -1,5 +1,4 @@
 .project
 java/server/logs
-java/solr/lib/classes
-java/server/solr/ezp-default/conf/_rest_managed.json
-java/server/solr/server/ezp-default/data/
+java/server/solr/ezp-default/data/
+java/server/solr/hsperf*

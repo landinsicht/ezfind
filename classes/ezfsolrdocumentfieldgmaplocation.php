@@ -15,7 +15,8 @@ class ezfSolrDocumentFieldGmapLocation extends ezfSolrDocumentFieldBase
                                                     'coordinates' => 'geopoint',
                                                     'geohash' => 'geohash',
                                                     'latitude' => 'float',
-                                                    'longitude' => 'float' );
+                                                    'longitude' => 'float',
+                                                    'pointrpt' => 'location_rpt');
 
 
     const DEFAULT_SUBATTRIBUTE = 'address';
@@ -47,6 +48,10 @@ class ezfSolrDocumentFieldGmapLocation extends ezfSolrDocumentFieldBase
             //almost the same input format, Solr will take care of the conversion to a geohash string
             //disabled for now, need to update Solr.war first
             //$data[self::getFieldName( $contentClassAttribute, 'geohash' )] = $longitude . ' ' . $latitude;
+        }
+        if ( !empty( $longitude ) && !empty( $latitude ) )
+        {
+            $data[self::getFieldName( $contentClassAttribute, 'pointrpt' )] = 'POINT('.$longitude . ' ' . $latitude.')';
         }
         return $data;
 
