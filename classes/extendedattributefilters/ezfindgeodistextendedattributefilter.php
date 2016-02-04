@@ -13,6 +13,7 @@
  *                 'field', 'article/location',
  *                 'latitude', '46.75984',
  *                 'longitude', '1.738281'
+ *                 'd' , '1'
  *             )
  * 	       )
  * 	   )
@@ -22,6 +23,7 @@
  * - field    : solr geopoint field holding document location
  * - latitude : reference geopoint latitude
  * - longitude: reference geopoint longitude
+ * - d        : distance / filter
  * @author bchoquet
  *
  */
@@ -57,13 +59,22 @@ class eZFindGeoDistExtendedAttributeFilter implements eZFindExtendedAttributeFil
 
             //geodist custom parameters
             $queryParams['sfield'] = $fieldName;
-            $queryParams['pt'] = $filterParams['latitude'] . ',' . $filterParams['longitude'];
+            $queryParams['pt'] = $filterParams['longitude'] . ',' . $filterParams['latitude'];
 
             //sort by geodist
             $queryParams['sort']  = 'geodist() asc,' . $queryParams['sort'];
 
-            //exclude unlocated documents
-            $queryParams['fq'][] = $fieldName.':[-90,-90 TO 90,90]';
+            if (isset($filterParams['d']))
+            {
+                //if distance isset, then only show results inbetween the radius.
+                $queryParams['d'] = (float)$filterParams['d'];
+                $queryParams['fq'][] = '{!geofilt sfield='.$fieldName.'}';
+            }
+            else
+            {
+                //exclude unlocated documents
+                $queryParams['fq'][] = $fieldName . ':[-90,-90 TO 90,90]';
+            }
         }
         catch( Exception $e )
         {
